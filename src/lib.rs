@@ -1,6 +1,9 @@
 #![crate_name = "craftping"]
 
 use std::io::{Cursor, Error, ErrorKind, Read, Result, Write};
+use std::net::{TcpStream, SocketAddr};
+use std::time::Duration;
+use std::borrow::Borrow;
 
 trait ReadPacket {
     fn read_packet(&mut self) -> Result<CraftPacket>;
@@ -84,7 +87,7 @@ impl<W: Write> WritePacket for W {
 /// * `port` - port number to ping on
 pub fn ping(addr: &str, port: u16) -> Result<String> {
     use std::net::TcpStream;
-    let mut stream = TcpStream::connect(format!("{}:{}", addr, port))?;
+    let mut stream = TcpStream::connect_timeout(SocketAddr::new(addr, port).borrow(), Duration::from_secs(2))?;
     {
         let mut buffer = Cursor::new(Vec::<u8>::new());
         buffer.write_varint(-1)?;
