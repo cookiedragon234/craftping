@@ -87,7 +87,7 @@ impl<W: Write> WritePacket for W {
 /// * `port` - port number to ping on
 pub fn ping(addr: &str, port: u16) -> Result<String> {
     use std::net::TcpStream;
-    let mut stream = TcpStream::connect_timeout(SocketAddr::new(addr, port).borrow(), Duration::from_secs(2))?;
+    let mut stream = TcpStream::connect_timeout(SocketAddr::new(addr.parse().unwrap(), port).borrow(), Duration::from_secs(2))?;
     {
         let mut buffer = Cursor::new(Vec::<u8>::new());
         buffer.write_varint(-1)?;
